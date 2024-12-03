@@ -7,15 +7,14 @@ public class Day2Part1 {
     public static void main(String[] args) throws FileNotFoundException {
       Scanner puzzleScan = new Scanner(new File("PuzzleInput/Day2.txt"));
       int safe = 0;
-      int line = 0;
 
       while (puzzleScan.hasNextLine()) {
-        line++;
         Scanner lineScan = new Scanner (puzzleScan.nextLine());
 
         boolean wasSafe = true;
         int previous = lineScan.nextInt();
         Integer previousSlope = null;
+        
         while (lineScan.hasNextInt()) {
           int current = lineScan.nextInt();
           int slope = previous - current;
@@ -34,8 +33,6 @@ public class Day2Part1 {
         if (wasSafe) safe++;
 
         lineScan.close();
-
-        // if (line > 5) return;
       }
       
       puzzleScan.close();
