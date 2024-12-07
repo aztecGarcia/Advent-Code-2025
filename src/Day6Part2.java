@@ -29,6 +29,8 @@ public class Day6Part2 {
         // int[] lastVisited = new int[2];
 
         while (inBounds(current)) {
+            // System.out.printf("%d %d)\n", current[0], current[1]);
+
             if (Character.compare(grid[current[0]][current[1]], '#') == 0) {
                 String key = current[0] + "," + current[1]; // Tag location
 
@@ -48,6 +50,16 @@ public class Day6Part2 {
 
                 direction = nextDirection(direction);
             }
+            // grid[current[0]][current[1]] = 'x';
+        
+
+            // for (int y = 0; y < grid[0].length; y++) {
+            //     for (int x = 0; x < grid.length; x++) {
+            //         System.out.print(grid[x][y]);
+            //     }
+            //     System.out.println();
+            // }
+            // System.out.println();
 
             current[0] += direction[0];
             current[1] += direction[1];
@@ -101,10 +113,7 @@ public class Day6Part2 {
                         
                         // int[] nextSpot = new int[] {current[0] + direction[0], current[1] + direction[1]};
                         int[] nextSpot = new int[] {current[0], current[1]};
-                        System.out.printf("%d %d\n", current[0], current[1]);
-                        System.out.println(inBounds(nextSpot));
-                        System.out.println(Character.compare(grid[nextSpot[0]][nextSpot[1]], '#') != 0);
-                        System.out.println(forever(nextSpot));
+                        // System.out.printf("%d %d\n", current[0], current[1]);
                         
                         if (inBounds(nextSpot) && Character.compare(grid[nextSpot[0]][nextSpot[1]], '#') != 0 && forever(nextSpot)) {
                             grid[nextSpot[0]][nextSpot[1]] = 'O';
