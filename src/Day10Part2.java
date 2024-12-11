@@ -4,11 +4,9 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class Day10Part1 {
+public class Day10Part2 {
 
     public static String getKey(Integer[] point) {
         return point[0] + "," + point[1];
@@ -45,36 +43,43 @@ public class Day10Part1 {
         {0, -1},
     };
     public static int findScore(Integer[][] grid, Integer[] startPoint, Character[][] grid2) {
-        Set<String> visited = new HashSet<>();
         Deque<Integer[]> toTravel = new ArrayDeque<>();
         toTravel.add(startPoint);
 
-        int foundEnd = 0;
-
+        int totalScore = 1;
 
         while (toTravel.peek() != null) {
             Integer[] point = toTravel.poll();
             
-            visited.add(getKey(point));
             int height = grid[point[0]][point[1]];
-            
+            int split = 0;
+
             for (Integer[] direction: directions) {
                 Integer[] nextPoint = new Integer[] { point[0] + direction[0], point[1] + direction[1]};
                 
-                if (inBounds(grid, nextPoint) && (visited.contains(getKey(nextPoint)) == false) &&  grid[nextPoint[0]][nextPoint[1]] == height + 1) {
-                    visited.add(getKey(nextPoint));
-                    
+                if (inBounds(grid, nextPoint) && grid[nextPoint[0]][nextPoint[1]] == height + 1) {  
                     if (grid[nextPoint[0]][nextPoint[1]] != 9) {
                         toTravel.add(nextPoint);
-                    } else {
-                        foundEnd++;
                     }
+
+                    split++;
                     grid2[nextPoint[0]][nextPoint[1]] = Character.forDigit(grid[nextPoint[0]][nextPoint[1]], 10);
                 }
             }
+
+            totalScore += split-1;
+            // if (split > 1) {
+            //     if (debug) {
+            //         System.out.printf("Omg split! %d\n", split);
+            //         displayGrid(grid2);
+            //     }
+            //     totalScore += split-1;
+            // } else if (split == 0) {
+            //     totalScore--; // path closed up brah!
+            // }
         }
 
-        return foundEnd;
+        return totalScore;
     }
 
     public static int parseWithDefault(String number, int defaultVal) {
@@ -110,12 +115,14 @@ public class Day10Part1 {
         }
 
         
-        displayGrid(grid);
+        displayGrid(grid2);
         int sum = 0;
         
         for (Integer[] point: startingPoints) {
             grid2 = new Character[rows.length][rows[0].length()-1];
+            grid2[point[0]][point[1]] = '0';
             int score = findScore(grid, point, grid2);
+            System.out.println(score);
             sum += score;
         }
         
