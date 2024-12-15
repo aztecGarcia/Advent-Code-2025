@@ -62,6 +62,10 @@ public class Day11Part2 {
                 // System.out.printf("On: %d ", rocks.get(j));
                 // System.out.println(amountStacked);
                 if (amountStacked.containsKey(rocks.get(j)) == true) {
+                    if (amountStacked.get(rocks.get(j)).size() == 0) { // because its gonna cut it off so we do
+                        amountStacked.get(rocks.get(j)).add(loopTimes-i);
+                    }
+
                     amountStacked.get(rocks.get(j)).add(loopTimes-i);
 
                     System.out.printf("Converged: %d\n", rocks.get(j));
@@ -123,14 +127,17 @@ public class Day11Part2 {
             System.out.println("Current Entry:");
             System.out.println(entry);
             
+            // entry.getValue().ad
 
             for (int amountLoop: entry.getValue()) {
                 Deque<Long> toTravel = new ArrayDeque<Long>();
                 // int i = 0;
-                toTravel.add(entry.getKey());
+                long startingOne = entry.getKey();
+                toTravel.add(startingOne);
 
+                boolean pioneer = false;
                 if (amountLoop == loopTimes) {
-
+                    pioneer = true;
                     sizeFrom++; // pioneers!
                 }
                 
@@ -147,24 +154,33 @@ public class Day11Part2 {
                         // }
     
     
+                        int both = 0;
+
                         System.out.println(current);
-                        if (traceback.containsKey(current)) {
+                        System.out.println(amountStacked.get(current).isEmpty());
+                        if (traceback.containsKey(current) && (amountStacked.get(current).isEmpty() || pioneer == false || current == startingOne) ) {
+                            both++;
                             toTravel.add(traceback.get(current));
                             // sizeFrom++;
                         } //else { amountInDepth--; }
-                        if (doubled.containsKey(current)) {
+                        if (doubled.containsKey(current) && (amountStacked.get(current).isEmpty() || pioneer == false || current == startingOne) ) {
+                            both++;
                             toTravel.add(doubled.get(current));
-                            sizeFrom++;
                             // i--;
                             // amountInDepth++;
-                            System.out.printf("Split from: %d\n", current);
+                            // System.out.printf("Split from: %d\n", current);
                         } //else { amountInDepth--; }
+
+                        if (both == 2) {
+                            sizeFrom++;
+                        }
                     }
                 }
             }
 
 
-            
+
+            System.out.printf("Size: %d\n", sizeFrom);            
             sumSize += sizeFrom;
         }
         System.out.println(sumSize);
