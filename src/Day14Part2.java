@@ -60,7 +60,7 @@ public class Day14Part2 {
             allPoints.add(new Integer[][] { point, velocity });
         }
         
-        for (int seconds = 0; seconds < 8051; seconds++) {
+        for (int seconds = 0; seconds < cycleX*cycleY; seconds++) {
             // grid = new Integer[grid.length][grid[0].length];
 
             int currentCycleX = seconds%cycleX;

@@ -47,8 +47,8 @@ public class Day11Part2 {
         
         String[] cells = puzzleInput.split(" ");
         List<Long> rocks = new ArrayList<Long>();
-        Map<Long, Long> traceback = new HashMap<Long, Long>();
-        Map<Long, List<Integer>> amountStacked = new HashMap<Long, List<Integer>>();
+        Map<Long, List<Integer>> repeated = new HashMap<>();
+        Map<Long, Long> traceback = new HashMap<>();
         Map<Long, Long> doubled = new HashMap<>();
         int amount = 0;
         for (int i = 0; i < cells.length; i++) {
@@ -57,41 +57,36 @@ public class Day11Part2 {
         
         int loopTimes = 5;
         for (int i = 0; i < loopTimes; i++) {
-            System.out.println(rocks);
-            for (int j = 0; j < rocks.size(); j++) {
+            // System.out.println(rocks);
+            int maxLoop = rocks.size();
+            for (int j = 0; j < maxLoop; j++) {
                 // System.out.printf("On: %d ", rocks.get(j));
                 // System.out.println(amountStacked);
-                if (amountStacked.containsKey(rocks.get(j)) == true) {
-                    if (amountStacked.get(rocks.get(j)).size() == 0) { // because its gonna cut it off so we do
-                        amountStacked.get(rocks.get(j)).add(loopTimes-i);
+                Long rockJ = rocks.get(j);
+
+                if (traceback.containsKey(rockJ) || i == 0) {
+                    if (!repeated.containsKey(rockJ)) {
+                        repeated.put(rockJ, new ArrayList<Integer>());
                     }
 
-                    amountStacked.get(rocks.get(j)).add(loopTimes-i);
+                    repeated.get(rockJ).add(loopTimes - i);
 
-                    System.out.printf("Converged: %d\n", rocks.get(j));
+                    // rocks.set(j, traceback.get(rockJ));
+                    // if (doubled.containsKey(rockJ)) {
+                    //     rocks.add(doubled.get(rockJ));
+                    // }
 
-                    rocks.remove(j);
-                    j--;
                     continue;
-                }
-
-                if (!amountStacked.containsKey(rocks.get(j))) { // making history! oh yeah!
-                    
-                    final int bruh = i;
-                    List<Integer> stackList = new ArrayList<>();
-                    if (i == 0) {// the originators must have boostraps!
-                        stackList.add(loopTimes-bruh);
-                    }
-                    amountStacked.put(rocks.get(j), stackList); // cached this hoe!
-
-                }
-                if (rocks.get(j) == 0) {
+                } 
+                
+                
+                if (rockJ == 0) {
                     traceback.put((long)0, (long)1);
                     rocks.set(j, (long)1);
                     continue;
                 } 
 
-                long current = rocks.get(j);
+                long current = rockJ;
                 int digits = (getDigits(current));
 
                 if (digits%2 == 0) {
@@ -104,7 +99,7 @@ public class Day11Part2 {
 
                     // traceback.put(current, bottom);
                     traceback.put(current, top);
-                    rocks.add(j +1, bottom);
+                    rocks.add(bottom);
                     rocks.set(j, top);
                 
                     j++;
@@ -113,77 +108,48 @@ public class Day11Part2 {
                     rocks.set(j, current * 2024);
                 }
             }
-            System.out.println(i);
+            // System.out.println(i);
         }
 
-        System.out.println(rocks);
-        System.out.println(amountStacked.entrySet());
-        System.out.println(traceback.entrySet());
-        int sumSize = 0;
-        for (Map.Entry<Long, List<Integer>> entry: amountStacked.entrySet()) {
-            int sizeFrom = 0;
+        System.out.println(rocks.size());
+        System.out.println(repeated.size());
 
-            if (entry.getValue().size() == 0) { continue; };
-            System.out.println("Current Entry:");
-            System.out.println(entry);
-            
-            // entry.getValue().ad
+        int sumSplit = 0;
 
-            for (int amountLoop: entry.getValue()) {
-                Deque<Long> toTravel = new ArrayDeque<Long>();
-                // int i = 0;
-                long startingOne = entry.getKey();
-                toTravel.add(startingOne);
+        for (Map.Entry<Long, List<Integer>> entry: repeated.entrySet()) {
+            Long start = entry.getKey();
 
-                boolean pioneer = false;
-                if (amountLoop == loopTimes) {
-                    pioneer = true;
-                    sizeFrom++; // pioneers!
-                }
+            for (Integer loopAmount: entry.getValue()) {
+                Deque<Long> travel = new ArrayDeque<>();
+
+                travel.add(start);
+                System.out.println(start);
                 
-                // int amountInDepth = 1;
-                // int incrementCheck = 0;
-                
-                for (int i = 0; i < amountLoop; i++) {
-                    for (int j = 0; j < toTravel.size(); j++) {
-                        Long current = toTravel.poll();
-                        // i++;
-                        // if (amountInDepth <= i) {
-                        //     i = 0;
-                        //     incrementCheck++;
-                        // }
-    
-    
-                        int both = 0;
+                int splitTimes = 1;
+                for (int i = 0; i < loopAmount; i++) {
+                    int travelDepth = travel.size();
+                    
+                    for (int j = 0; j < travelDepth; j++) {
+                        Long current = travel.poll();
 
-                        System.out.println(current);
-                        System.out.println(amountStacked.get(current).isEmpty());
-                        if (traceback.containsKey(current) && (amountStacked.get(current).isEmpty() || pioneer == false || current == startingOne) ) {
-                            both++;
-                            toTravel.add(traceback.get(current));
-                            // sizeFrom++;
-                        } //else { amountInDepth--; }
-                        if (doubled.containsKey(current) && (amountStacked.get(current).isEmpty() || pioneer == false || current == startingOne) ) {
-                            both++;
-                            toTravel.add(doubled.get(current));
-                            // i--;
-                            // amountInDepth++;
-                            // System.out.printf("Split from: %d\n", current);
-                        } //else { amountInDepth--; }
+                        if (traceback.containsKey(current)) {
+                            travel.add(traceback.get(current));
+                        }
 
-                        if (both == 2) {
-                            sizeFrom++;
+                        if (doubled.containsKey(current)) {
+                            travel.add(doubled.get(current));
+                            splitTimes++;
                         }
                     }
                 }
+
+                sumSplit += splitTimes;
             }
-
-
-
-            System.out.printf("Size: %d\n", sizeFrom);            
-            sumSize += sizeFrom;
         }
-        System.out.println(sumSize);
+
+        System.out.println(sumSplit);
+        // System.out.println(amountStacked.entrySet());
+        // System.out.println(traceback.entrySet());
      }
 }
 
